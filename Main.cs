@@ -8,33 +8,48 @@ namespace OnlyFavorites
     public class Main : Script
     {
         private readonly FavoriteMenu FavoriteMenu;
+        private ScriptSettings scriptSetting;
         private Keys MenuKey;
 
         public Main()
         {
-            var Config = ScriptSettings.Load("scripts\\OnlyFavorites.ini");
-            MenuKey = Config.GetValue("KEY", "OpenMenu", Keys.F8);
-            FavoriteMenu = new FavoriteMenu(Config);
+            scriptSetting = ScriptSettings.Load("scripts\\OnlyFavorites.ini");
+            MenuKey = scriptSetting.GetValue("KEY", "OpenMenu", Keys.F10);
+            FavoriteMenu = new FavoriteMenu(new FavoriteSetting(scriptSetting, PedHash.Michael), new FavoriteSetting(scriptSetting, PedHash.Trevor), new FavoriteSetting(scriptSetting, PedHash.Franklin));
+            FavoriteMenu.SaveConfig += HandleSave;
             Tick += OnTick;
             KeyDown += OnKeyDown;
+        }
+
+        private void HandleSave(FavoriteSetting favoriteSetting)
+        {
+            favoriteSetting.UpdateScriptSettings(scriptSetting, (PedHash)Game.Player.Character.Model.Hash);
+            scriptSetting.Save();
         }
 
         private void OnTick(object sender, EventArgs e)
         {
             FavoriteMenu.OnTick();
 
-            var selectedHashes = FavoriteMenu.GetHashes();
-            if (selectedHashes != null && selectedHashes.Length > 0)
+            var currentSetting = FavoriteMenu.GetMenuSettings();
+            if (currentSetting != null)
             {
-                foreach (uint weaponHash in Enum.GetValues(typeof(WeaponHash)))
+                foreach (WeaponHash weaponHash in Enum.GetValues(typeof(WeaponHash)))
                 {
-                    if(weaponHash == (uint)WeaponHash.Unarmed)
+                    if (weaponHash == WeaponHash.Unarmed)
                     {
                         continue;
                     }
-                    if (Function.Call<bool>(Hash.HAS_PED_GOT_WEAPON, Game.Player.Character, weaponHash, false) && Array.IndexOf(selectedHashes, (WeaponHash)weaponHash) == -1)
+                    if (Function.Call<bool>(Hash.HAS_PED_GOT_WEAPON, Game.Player.Character, weaponHash, false) && !currentSetting.Contains(weaponHash))
                     {
-                        Function.Call(Hash.SET_PED_DROPS_INVENTORY_WEAPON, Game.Player.Character, weaponHash, 0, 0, 0, 0);
+                        if (weaponHash == WeaponHash.Parachute)
+                        {
+                            Function.Call(Hash.REMOVE_WEAPON_FROM_PED, Game.Player.Character, weaponHash);
+                        }
+                        else
+                        {
+                            Function.Call(Hash.SET_PED_DROPS_INVENTORY_WEAPON, Game.Player.Character, weaponHash, 0, 0, 0, 0);
+                        }
                     }
                 }
             }
