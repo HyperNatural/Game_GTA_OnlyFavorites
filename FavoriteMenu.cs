@@ -20,7 +20,7 @@ internal class FavoriteMenu
     private NativeListItem<WeaponHash> heavyFirearmsSelector;
     private NativeListItem<WeaponHash> explosiveSelector;
     private NativeListItem<WeaponHash> specialSelector;
-    private NativeItem applyButton;
+    private bool enabledByDefault;
 
     private PedHash currentPed;
 
@@ -32,11 +32,12 @@ internal class FavoriteMenu
     private FavoriteSetting settingForTrevor;
     private FavoriteSetting settingForFranklin;
 
-    public FavoriteMenu(FavoriteSetting _settingForMichael, FavoriteSetting _settingForTrevor, FavoriteSetting _settingForFranklin)
+    public FavoriteMenu(bool _enabledByDefault, FavoriteSetting _settingForMichael, FavoriteSetting _settingForTrevor, FavoriteSetting _settingForFranklin)
     {
         pool = new ObjectPool();
         menu = new NativeMenu("OnlyFavorites", "Choose your favorites only");
         currentPed = (PedHash)Game.Player.Character.Model.Hash;
+        enabledByDefault = _enabledByDefault;
         settingForMichael = _settingForMichael;
         settingForTrevor = _settingForTrevor;
         settingForFranklin = _settingForFranklin;
@@ -100,7 +101,10 @@ internal class FavoriteMenu
     /// <param name="menu">The menu to be configured.</param>
     private void SetMenuItem(NativeMenu menu)
     {
-        modEnabledCheckbox = new NativeCheckboxItem("Enabled");
+        modEnabledCheckbox = new NativeCheckboxItem("Enabled")
+        {
+            Checked = enabledByDefault
+        };
         menu.Add(modEnabledCheckbox);
 
         // Separator
@@ -142,7 +146,7 @@ internal class FavoriteMenu
         menu.Add(heavyFirearmsSelector);
 
         // Explosive
-        explosiveSelector = new NativeListItem<WeaponHash>("Explosive", WeaponHash.Unarmed, WeaponHash.Grenade, WeaponHash.StickyBomb, WeaponHash.ProximityMine, WeaponHash.BZGas, WeaponHash.Molotov, WeaponHash.PetrolCan, WeaponHash.PipeBomb, WeaponHash.Flare, WeaponHash.Ball, WeaponHash.Snowball, WeaponHash.HazardousJerryCan, WeaponHash.FertilizerCan);
+        explosiveSelector = new NativeListItem<WeaponHash>("Explosive", WeaponHash.Unarmed, WeaponHash.Grenade, WeaponHash.StickyBomb, WeaponHash.ProximityMine, WeaponHash.SmokeGrenade, WeaponHash.BZGas, WeaponHash.Molotov, WeaponHash.PetrolCan, WeaponHash.PipeBomb, WeaponHash.Flare, WeaponHash.Ball, WeaponHash.Snowball, WeaponHash.HazardousJerryCan, WeaponHash.FertilizerCan);
         explosiveSelector.Description = $"{explosiveSelector.Items.Count} Options";
         menu.Add(explosiveSelector);
 

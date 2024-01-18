@@ -9,13 +9,14 @@ namespace OnlyFavorites
     {
         private readonly FavoriteMenu FavoriteMenu;
         private ScriptSettings scriptSetting;
-        private Keys MenuKey;
+        private readonly Keys MenuKey;
 
         public Main()
         {
             scriptSetting = ScriptSettings.Load("scripts\\OnlyFavorites.ini");
-            MenuKey = scriptSetting.GetValue("KEY", "OpenMenu", Keys.F10);
-            FavoriteMenu = new FavoriteMenu(new FavoriteSetting(scriptSetting, PedHash.Michael), new FavoriteSetting(scriptSetting, PedHash.Trevor), new FavoriteSetting(scriptSetting, PedHash.Franklin));
+            MenuKey = scriptSetting.GetValue("MENU", "OpenKey", Keys.F10);
+            var EnableByDefault = scriptSetting.GetValue("MENU", "EnabledByDefault", false);
+            FavoriteMenu = new FavoriteMenu(EnableByDefault, new FavoriteSetting(scriptSetting, PedHash.Michael), new FavoriteSetting(scriptSetting, PedHash.Trevor), new FavoriteSetting(scriptSetting, PedHash.Franklin));
             FavoriteMenu.SaveConfig += HandleSave;
             Tick += OnTick;
             KeyDown += OnKeyDown;
