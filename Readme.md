@@ -1,5 +1,5 @@
 # OnlyFavorites
-[Download from here.]([https://upload.wikimedia.org/wikipedia/en/a/a9/Grand_Theft_Auto_V_cover.jpg](https://www.gta5-mods.com/scripts/onlyfavorites))
+[Download from here.](https://www.gta5-mods.com/scripts/onlyfavorites)
 
 ## Overview
 
